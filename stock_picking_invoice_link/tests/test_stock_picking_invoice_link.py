@@ -105,17 +105,17 @@ class TestStockPickingInvoiceLink(TestSale):
                          '"fully invoiced" after complete delivery and '
                          'invoicing')
         # Check links
-        # self.assertEqual(
-        #     inv_1.picking_ids, pick_1,
-        #     "Invoice 1 must link to only First Partial Delivery")
+        self.assertEqual(
+            inv_1.picking_ids, pick_1,
+            "Invoice 1 must link to only First Partial Delivery")
         self.assertEqual(
             inv_1.invoice_line_ids.mapped('move_line_ids'),
             pick_1.move_lines.filtered(
                 lambda x: x.product_id.invoice_policy == "delivery"),
             "Invoice 1 lines must link to only First Partial Delivery lines")
-        # self.assertEqual(
-        #     inv_2.picking_ids, pick_2,
-        #     "Invoice 2 must link to only Second Delivery")
+        self.assertEqual(
+            inv_2.picking_ids, pick_2,
+            "Invoice 2 must link to only Second Delivery")
         self.assertEqual(
             inv_2.invoice_line_ids.mapped('move_line_ids'),
             pick_2.move_lines.filtered(
@@ -127,6 +127,6 @@ class TestStockPickingInvoiceLink(TestSale):
         self.assertEqual(result['res_id'], inv_1.id)
         # Mock multiple invoices linked to a picking
         inv_3 = inv_1.copy()
-        inv_3.picking_ids |= pick_1
+        inv_3.invoice_line_ids.move_line_ids = pick_1.move_lines[0]
         result = pick_1.action_view_invoice()
         self.assertEqual(result['views'][0][1], 'tree')

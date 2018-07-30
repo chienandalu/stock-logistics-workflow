@@ -6,13 +6,13 @@
         <field name="model">account.invoice</field>
         <field name="inherit_id" ref="account.invoice_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[@name='button_box']" position="inside">
+            <field name="state" position="before">
+                <field name="picking_ids" invisible="1"/>
                 <button name="action_view_picking" type="object"
-                        attrs="{'invisible': [('picking_count', '=', 0)]}"
-                        class="oe_stat_button" icon="fa-truck">
-                    <field name="picking_count" string="Pickings" widget="statinfo"/>
-                </button>
-            </xpath>
+                        string="View Picking" class="oe_highlight"
+                        attrs="{'invisible': [('picking_ids', '=', False)]}"
+                        groups="base.group_user"/>
+            </field>
         </field>
     </record>
 

@@ -10,33 +10,27 @@ from odoo import api, fields, models
 class AccountInvoice(models.Model):
     _inherit = "account.invoice"
 
-    picking_ids = fields.One2many(
+    @api.depends('invoice_line_ids.move_line_ids')
+    def _compute_picking_ids(self):
+        for inv in self:
+            inv.picking_ids = inv.invoice_line_ids.mapped(
+                'move_line_ids.picking_id')
+
+    picking_ids = fields.Many2many(
         comodel_name='stock.picking',
-        inverse_name='invoice_id',
+        compute='_compute_picking_ids',
         string='Related Pickings',
         readonly=True,
-        copy=False,
         help="Related pickings (only when the invoice has been generated "
              "from a sale order).",
     )
-    picking_count = fields.Integer(
-        string='Number of pickings',
-        compute='_compute_pickings',
-    )
-
-    @api.depends('picking_ids')
-    def _compute_pickings(self):
-        picking_obj = self.env['stock.picking']
-        for invoice in self:
-            invoice.picking_count = picking_obj.search_count([
-                ('invoice_id', '=', invoice.id)])
 
     @api.multi
     def action_view_picking(self):
         action = self.env.ref('stock.action_picking_tree_all').read()[0]
-        if self.picking_count > 1:
+        if len(self.picking_ids) > 1:
             action['domain'] = [('id', 'in', self.picking_ids.ids)]
-        elif self.picking_count:
+        elif self.picking_ids:
             action['views'] = [
                 (self.env.ref('stock.view_picking_form').id, 'form')]
             action['res_id'] = self.picking_ids.id

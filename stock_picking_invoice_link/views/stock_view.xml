@@ -9,15 +9,16 @@
         <field name="arch" type="xml">
             <field name="state" position="before">
                     <button name="action_view_invoice" type="object"
-                        string="View Invoice" class="oe_highlight"
-                        attrs="{'invisible': [('invoice_id', '=', [])]}"
-                        groups="base.group_user"/>
+                            string="View Invoice" class="oe_highlight"
+                            attrs="{'invisible': [('invoice_ids', '=', False)]}"
+                            groups="base.group_user"/>
             </field>
             <xpath expr="//group/field[@name='picking_type_id']" position="after">
-                <field name="invoice_id" string="Invoice"
-                    groups="account.group_account_invoice"
-                    attrs="{'invisible':[('invoice_id', '=', False)]}"
-                    context="{'form_view_ref': 'account.invoice_form'}"/>
+                <field name="invoice_ids" string="Invoice"
+                       widget="many2many_tags"
+                       groups="account.group_account_invoice"
+                       attrs="{'invisible':[('invoice_ids', '=', False)]}"
+                       context="{'form_view_ref': 'account.invoice_form'}"/>
             </xpath>
         </field>
     </record>
